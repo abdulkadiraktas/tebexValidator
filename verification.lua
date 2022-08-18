@@ -64,16 +64,21 @@ function verificationchecker()
 		})
 	end)
 end
-function GetHost() -- this function get server ip. But works EN lang windows only.
-   local F,L,IP
-   F = io.popen('ipconfig')
-   L = F:read("*all")
-   F:close()
-   IP = L:match('IP Address.*: (%d*.%d*.%d*.%d*).*Sub')
-   if not IP then 
-      IP = L:match('IPv4 Address.*: (%d*.%d*.%d*.%d*).*Sub')
-   end
-   return IP , L
+function GetHost()
+    local data = nil
+    PerformHttpRequest("http://api.ipify.org/", function(code, result, headers)
+        if result and #result then
+			data = result
+        end
+    end, "GET")
+	local timeout = 0
+	while not data and timeout < 10000 do
+		Wait(100)
+		timeout = timeout + 1
+		print(timeout)
+	end
+	print(data)
+	return data
 end
 function getdatafromapi(url,cb)
 	local data = nil
